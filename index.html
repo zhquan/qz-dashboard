@@ -3,18 +3,23 @@
 	<head>
 		<title>Chart</title>
         <script src="js/jquery.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
 		<script src="js/Chart.js"></script>
         <script src="js/index.js"></script>
+
+        <link href="css/jquery-ui.min.css" rel="stylesheet">
 	</head>
 	<body>
-        <div id="algo"></div>
-        <button id="example">EXAMPLE</button><br>
-        <button style="display: none" id="bar">BAR</button>
-        <button style="display: none" id="doughnut">DOUGHNUT</button>
-        <button style="display: none" id="line">LINE</button>
-        <button style="display: none" id="pie">PIE</button>
-        <button style="display: none" id="polararea">PolarArea</button>
-        <button style="display: none" id="radar">RADAR</button>
+        <div id="menu" style="float: left">
+            <div id="algo"></div>
+            <button id="example">EXAMPLE</button><br>
+            <button style="display: none" id="bar">BAR</button>
+            <button style="display: none" id="doughnut">DOUGHNUT</button>
+            <button style="display: none" id="line">LINE</button>
+            <button style="display: none" id="pie">PIE</button>
+            <button style="display: none" id="polararea">PolarArea</button>
+            <button style="display: none" id="radar">RADAR</button>
+        </div>
 		<div style="width: 50%; float: left">
 			<canvas id="canvas" height="450" width="600"></canvas>
 		</div>
