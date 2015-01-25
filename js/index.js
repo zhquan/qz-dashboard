@@ -95,9 +95,11 @@ $(document).ready(function(){
     
 });
 function json(){
-    $.getJSON("json/smc1.json").success(function(data){
+    $.getJSON("json/dom-evolutionary.json").success(function(data){
         $.each( data, function( key, val ) {
             $("#algo").append('<input type="checkbox" name="'+key+'" value="'+key+'">'+key+'<br>')
+            console.log(key);
+            console.log(val);
         });
         $("#algo").append('<input type="button" onclick="selection()" value="OK">');
     });
@@ -108,31 +110,47 @@ function selection() {
         check.push($(this).attr('value'));
     })
     var valor = sacar(check);
+    console.log('checked '+check);
     var Datas = {
 	    labels : valor[0],
 	    datasets : [
 		    {
-			    fillColor : "rgba(220,220,220,0.5)",
-			    strokeColor : "rgba(220,220,220,0.8)",
-			    highlightFill: "rgba(220,220,220,0.75)",
-			    highlightStroke: "rgba(220,220,220,1)",
+                label: check,
+			    fillColor : "yellow",
+			    strokeColor : "yellow",
+			    highlightFill: "yellow",
+			    highlightStroke: "yellow",
 			    data : valor[1]
 		    }
         ]
     }
-    var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, {
+    console.log(Datas);
+    var options = {
+        legendTemplate : '<ul>'
+                  +'<% for (var i=0; i<datasets.length; i++) { %>'
+                    +'<li>'
+                    +'<span style=\"background-color:<%=datasets[i].fillColor%>\"></span>'
+                    +'<% if (datasets[i].label) { %><%= datasets[i].label %><% } %>'
+                  +'</li>'
+                +'<% } %>'
+              +'</ul>'
+    }
+    var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, options,{
 		responsive: true
 	});
+    var legend = myLine.generateLegend();
+    $("#legend").append(legend);
 }
 function sacar(check) {
     var pos = [];
     var tiempo = [];
     var dato1 = [];
     $.ajax({
-        url: 'json/smc1.json',
+        url: 'json/dom-evolutionary.json',
         dataType: 'json',
         async: false,
         success: function(json){
+            //Para coger el array checkeado
             $.each( json, function( key, val ) {
                 for (var j = 0; j < check.length; j++){
                     if (check[j] == key){
@@ -145,6 +163,7 @@ function sacar(check) {
                     }
                 }
             });
+            //Su correspondiente fecha
             $.each( json, function ( key, val ){
                 if ((key == 'date') && (pos.length>0)){
                     for(var i = 0; i < pos.length; i++){
