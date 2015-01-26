@@ -21,7 +21,6 @@ $(document).ready(function(){
 		]
 
 	}
-
     var Data2 = [
 		{
 			value: 300,
@@ -91,14 +90,23 @@ $(document).ready(function(){
 
     
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+    $('.nav-sidebar li:first').addClass('active');
+    $('.pestana section').hide();
+    $('.pestana section:first').show();    
+    $('.nav-sidebar li').click(function(){
+        $('.nav-sidebar li').removeClass('active');
+        $(this).addClass('active')
+        $('.pestana section').hide();
+        var activeTab = $(this).find('a').attr('href');
+        $(activeTab).show();
+    });
     json();
-    
 });
 function json(){
-    $.getJSON("json/dom-evolutionary.json").success(function(data){
+    $.getJSON("json/1fifoto-its-dom-evolutionary.json").success(function(data){
         $.each( data, function( key, val ) {
             if (key != 'date'){
-                $("#algo").append('<input type="checkbox" name="'+key+'" value="'+key+'">'+key+'<br>')
+                $("#algo").append('<input type="checkbox" name="'+key+'" value="'+key+'"> '+key+' </input><label>-> Color: </label><input type="text" value="rgba(151,187,205,0.3)" id="color'+key+'"></input><br>')
             }
         });
         $("#algo").append('<form name="formul"><label>Desde: </label><select id="desde" name="desde"></select></form>');
@@ -117,61 +125,60 @@ function json(){
                 }
             }
         });
-        $("#algo").append('<label>Tipo: </label><form name="formul3"><select name="tipo"><option value="Line">Line</option><option value="Bar">Bar</option><option value="Radar">Radar</option></select></form><br><label>Color: </label><input type="text" value="yellow" id="color"></input><br><input type="button" onclick="selection()" value="OK">');
+        $("#algo").append('<form name="formul3"><label>Tipo: </label><select name="tipo"><option value="Line">Line</option><option value="Bar">Bar</option><option value="Radar">Radar</option></select></form><input type="button" onclick="selection()" value="OK"></input>');
     });
 }
 function selection() {
     var check = [];
+    var color = [];
     $("#algo input[type='checkbox']:checked").each(function(){
         check.push($(this).attr('value'));
+        color.push(document.getElementById('color'+$(this).attr('value')).value);
     })
-    var color = document.getElementById('color').value;
     var valor = sacar(check);
-    console.log('checked '+check);
+    
+    var dataset = [];
+    for (var i= 0; i<check.length; i++){
+        var obj = {label: check[i], fillColor: color[i], strokeColor: color[i], highlightFill: color[i], highlightStroke: color[i], data: valor[1][i]};
+        dataset.push(obj);
+    }
     var Datas = {
 	    labels : valor[0],
-	    datasets : [
-		    {
-                label: check,
-			    fillColor : color,
-			    strokeColor : color,
-			    highlightFill: color,
-			    highlightStroke: color,
-			    data : valor[1]
-		    }
-        ]
+	    datasets : dataset
     }
-    console.log(Datas);
     var options = {
         legendTemplate : '<ul>'
-                  +'<% for (var i=0; i<datasets.length; i++) { %>'
-                    +'<li>'
-                    +'<span style=\"background-color:<%=datasets[i].fillColor%>\"></span>'
-                    +'<% if (datasets[i].label) { %><%= datasets[i].label %><% } %>'
-                  +'</li>'
-                +'<% } %>'
-              +'</ul>'
+                        +'<% for (var i=0; i<datasets.length; i++) { %>'
+                        +'<li>'
+                        +'<span style=\"background-color:<%=datasets[i].fillColor%>\">'
+                        +'<% if (datasets[i].label) { %><%= datasets[i].label %><% } %></span>'
+                        +'</li>'
+                        +'<% } %>'
+                        +'</ul>'
     }
     var tipo = document.formul3.tipo.options[document.formul3.tipo.selectedIndex].value;
+    $("#canvas").remove();
+    $("#legend").html('');
+    $(".canvas").html('<canvas id="canvas" height="450" width="600"></canvas>');
     if (tipo == 'Line'){
-        var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, options);
+        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, options);
     }else if (tipo == 'Bar'){
-        var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Bar(Datas, options);
+        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Bar(Datas, options);
     }else if (tipo == 'Radar'){
-        var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Radar(Datas, options);
+        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Radar(Datas, options);
     }
-    var legend = myLine.generateLegend();
-    $("#legend").append(legend);
+    var legend = myChart.generateLegend();
+    $("#legend").html(legend);
 }
 function sacar(check) {
     var desde = document.formul.desde.options[document.formul.desde.selectedIndex].value;
     var hasta = document.formul2.hasta.options[document.formul2.hasta.selectedIndex].value;
     var pos = [];
     var tiempo = [];
-    var dato1 = [];
+    var datos = [];
     var entrar = false;
     $.ajax({
-        url: 'json/dom-evolutionary.json',
+        url: 'json/1fifoto-its-dom-evolutionary.json',
         dataType: 'json',
         async: false,
         success: function(json){
@@ -196,13 +203,21 @@ function sacar(check) {
             $.each( json, function( key, val ) {
                 for (var j = 0; j < check.length; j++){
                     if (check[j] == key){
+                        var dato = [];
                         for (var i = 0; i < pos.length; i++){
-                            dato1.push(val[pos[i]]);
+                            dato.push(val[pos[i]]);
                         }
+                        datos.push(dato);
                     }
                 }
             });
         }
     });
-    return [tiempo, dato1];
+    return [tiempo, datos];
+}
+function prueba() {
+  $.get("http://dashboard.eclipse.org/data/json/", function(data){
+        $("#prueba").append(data);
+    });
+ 
 }
