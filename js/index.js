@@ -1,95 +1,4 @@
 $(document).ready(function(){
-    var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
-    $("#example").click(function(){
-	var Data = {
-		labels : ["January","February","March","April","May","June","July"],
-		datasets : [
-			{
-				fillColor : "blue",
-				strokeColor : "blue",
-				highlightFill: "blue",
-				highlightStroke: "blue",
-				data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
-			},
-			{
-				fillColor : "rgba(151,187,205,0.5)",
-				strokeColor : "rgba(151,187,205,0.8)",
-				highlightFill : "rgba(151,187,205,0.75)",
-				highlightStroke : "rgba(151,187,205,1)",
-				data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
-			}
-		]
-
-	}
-    var Data2 = [
-		{
-			value: 300,
-			color:"#F7464A",
-			highlight: "#FF5A5E",
-			label: "Red"
-		},
-		{
-			value: 50,
-			color: "#46BFBD",
-			highlight: "#5AD3D1",
-			label: "Green"
-		},
-		{
-			value: 100,
-			color: "#FDB45C",
-			highlight: "#FFC870",
-			label: "Yellow"
-		},
-		{
-			value: 40,
-			color: "#949FB1",
-			highlight: "#A8B3C5",
-			label: "Grey"
-		},
-		{
-			value: 120,
-			color: "#4D5360",
-			highlight: "#616774",
-			label: "Dark Grey"
-		}
-
-	];
-    $("#bar").show();
-    $("#doughnut").show();
-    $("#line").show();
-    $("#pie").show();
-    $("#polararea").show();
-    $("#radar").show();
-
-    $("#bar").click(function() {
-	    var myBar = new Chart(ctx).Bar(Data, {
-		    responsive : true
-	    });
-    });
-    $("#doughnut").click(function() {
-		var myDoughnut = new Chart(ctx).Doughnut(Data2, {responsive : true});
-    });
-	$("#line").click(function() {
-        var myLine = new Chart(ctx).Line(Data, {
-			responsive: true
-		});
-    });
-    $("#pie").click(function() {
-        var myPie = new Chart(ctx).Pie(Data2);
-    });
-    $("#polararea").click(function() {
-        var myPolarArea = new Chart(ctx).PolarArea(Data2);
-    });
-    $("#radar").click(function() {
-        var myRadar = new Chart(ctx).Radar(Data, {
-			responsive: true
-		});
-    });
-    });
-    var ctx = document.getElementById("canvas").getContext("2d");
-
-    
-//////////////////////////////////////////////////////////////////////////////////////////////////////
     $('.nav-sidebar li:first').addClass('active');
     $('.pestana section').hide();
     $('.pestana section:first').show();    
@@ -99,78 +8,62 @@ $(document).ready(function(){
         $('.pestana section').hide();
         var activeTab = $(this).find('a').attr('href');
         $(activeTab).show();
+        if (activeTab == '#chartsjs'){
+            $('.page-header').html('Charts JS');
+        }else if(activeTab == '#highcharts'){
+            $('.page-header').html('HighCharts');
+        }else if (activeTab == '#analytics'){
+            $('.page-header').html('Analytics');
+        }
+        json(activeTab);
     });
-    json();
 });
-function json(){
-    $.getJSON("json/1fifoto-its-dom-evolutionary.json").success(function(data){
+function json(div){
+    var Json = "json/dox-irc-rep-evolutionary.json";
+    $(".menu-nav").html('');
+    $.getJSON(Json).success(function(data){
         $.each( data, function( key, val ) {
             if (key != 'date'){
-                $("#algo").append('<input type="checkbox" name="'+key+'" value="'+key+'"> '+key+' </input><label>-> Color: </label><input type="text" value="rgba(151,187,205,0.3)" id="color'+key+'"></input><br>')
+                if(div == '#chartsjs'){
+                    $(div+" .menu-nav").append('<input type="checkbox" name="'+key+'" value="'+key+'"> <label> '+key+' -> Color: </label><input type="text" value="rgba(151,187,205,0.3)" id="color'+key+'"><br>');
+                }else if (div == '#highcharts'){
+                    $(div+" .menu-nav").append('<input type="checkbox" name="'+key+'" value="'+key+'"> <label> '+key+' -> Color: </label><input type="text" value="silver" id="color'+key+'" size="7"><input type="radio" name="'+key+'" value="line">Line <input type="radio" name="'+key+'" value="bar">Bar <input type="radio" name="'+key+'" value="pie">Pie<br>');
+                }
             }
         });
-        $("#algo").append('<form name="formul"><label>Desde: </label><select id="desde" name="desde"></select></form>');
+        $(div+" .menu-nav").append('<form name="formul"><label>Desde: </label><select id="desde" name="desde"></select></form>');
+        $(div+" .menu-nav").append('<form name="formul2"><label>Hasta: </label><select id="hasta" name="hasta"></select></form>');
         $.each( data, function( key, val ) {
             if (key == 'date'){
                 for (var i = 0; i<val.length; i++){
                     $("#desde").append('<option value="'+val[i]+'">'+val[i]+'</option>');
-                }
-            }
-        });
-        $("#algo").append('<form name="formul2"><label>Hasta: </label><select id="hasta" name="hasta"></select>');
-        $.each( data, function( key, val ) {
-            if (key == 'date'){
-                for (var i = 0; i<val.length; i++){
                     $("#hasta").append('<option value="'+val[i]+'">'+val[i]+'</option>');
                 }
             }
         });
-        $("#algo").append('<form name="formul3"><label>Tipo: </label><select name="tipo"><option value="Line">Line</option><option value="Bar">Bar</option><option value="Radar">Radar</option></select></form><input type="button" onclick="selection()" value="OK"></input>');
+        if (div == '#chartsjs'){
+            $(div+" .menu-nav").append('<form name="formul3"><label>Tipo: </label><select name="tipo"><option value="Line">Line</option><option value="Bar">Bar</option><option value="Radar">Radar</option></select></form>');
+        }
+        $(div+" .menu-nav").append('<input type="button" onclick="selection(\''+Json+'**'+div+'\')" value="OK">');
     });
 }
-function selection() {
+function selection(request) {
+    var json = request.split("**")[0];
+    var div = request.split("**")[1];
     var check = [];
     var color = [];
-    $("#algo input[type='checkbox']:checked").each(function(){
+    $(div+" .menu-nav input[type='checkbox']:checked").each(function(){
         check.push($(this).attr('value'));
         color.push(document.getElementById('color'+$(this).attr('value')).value);
     })
-    var valor = sacar(check);
-    
-    var dataset = [];
-    for (var i= 0; i<check.length; i++){
-        var obj = {label: check[i], fillColor: color[i], strokeColor: color[i], highlightFill: color[i], highlightStroke: color[i], data: valor[1][i]};
-        dataset.push(obj);
+    var valor = sacar(check, json);
+    if (div == '#chartsjs'){
+        chartsjs(check, color, valor);
+    }else if (div == '#highcharts'){
+        highchart(check, color, valor);
     }
-    var Datas = {
-	    labels : valor[0],
-	    datasets : dataset
-    }
-    var options = {
-        legendTemplate : '<ul>'
-                        +'<% for (var i=0; i<datasets.length; i++) { %>'
-                        +'<li>'
-                        +'<span style=\"background-color:<%=datasets[i].fillColor%>\">'
-                        +'<% if (datasets[i].label) { %><%= datasets[i].label %><% } %></span>'
-                        +'</li>'
-                        +'<% } %>'
-                        +'</ul>'
-    }
-    var tipo = document.formul3.tipo.options[document.formul3.tipo.selectedIndex].value;
-    $("#canvas").remove();
-    $("#legend").html('');
-    $(".canvas").html('<canvas id="canvas" height="450" width="600"></canvas>');
-    if (tipo == 'Line'){
-        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, options);
-    }else if (tipo == 'Bar'){
-        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Bar(Datas, options);
-    }else if (tipo == 'Radar'){
-        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Radar(Datas, options);
-    }
-    var legend = myChart.generateLegend();
-    $("#legend").html(legend);
 }
-function sacar(check) {
+function sacar(check, Json) {
     var desde = document.formul.desde.options[document.formul.desde.selectedIndex].value;
     var hasta = document.formul2.hasta.options[document.formul2.hasta.selectedIndex].value;
     var pos = [];
@@ -178,7 +71,7 @@ function sacar(check) {
     var datos = [];
     var entrar = false;
     $.ajax({
-        url: 'json/1fifoto-its-dom-evolutionary.json',
+        url: Json,
         dataType: 'json',
         async: false,
         success: function(json){
@@ -215,9 +108,75 @@ function sacar(check) {
     });
     return [tiempo, datos];
 }
-function prueba() {
-  $.get("http://dashboard.eclipse.org/data/json/", function(data){
-        $("#prueba").append(data);
+function chartsjs(check, color, valor){
+    var dataset = [];
+    for (var i= 0; i<check.length; i++){
+        var obj = {label: check[i], fillColor: color[i], strokeColor: color[i], highlightFill: color[i], highlightStroke: color[i], data: valor[1][i]};
+        dataset.push(obj);
+    }
+    var Datas = {
+	    labels : valor[0],
+	    datasets : dataset
+    }
+    var options = {
+        legendTemplate : '<ul>'
+                        +'<% for (var i=0; i<datasets.length; i++) { %>'
+                        +'<li>'
+                        +'<span style=\"background-color:<%=datasets[i].fillColor%>\">'
+                        +'<% if (datasets[i].label) { %><%= datasets[i].label %><% } %></span>'
+                        +'</li>'
+                        +'<% } %>'
+                        +'</ul>'
+    }
+    var tipo = document.formul3.tipo.options[document.formul3.tipo.selectedIndex].value;
+    $("#canvas").remove();
+    $("#legend").html('');
+    $(".canvas").html('<canvas id="canvas" height="450" width="600"></canvas>');
+    if (tipo == 'Line'){
+        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, options);
+    }else if (tipo == 'Bar'){
+        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Bar(Datas, options);
+    }else if (tipo == 'Radar'){
+        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Radar(Datas, options);
+    }
+    var legend = myChart.generateLegend();
+    $("#legend").html(legend);
+}
+function highchart(check, color, valor) {
+    var tipo = [];
+    $(".menu-nav input[type='radio']:checked").each(function(){
+        tipo.push($(this).attr('value'));
+    })
+    var serie = [];
+    for (var i= 0; i<check.length; i++){
+        var obj = {type: tipo[i], name: check[i], data: valor[1][i], color: color[i]};
+        serie.push(obj);
+    }
+    var style = ({
+        chart: {
+            renderTo: 'hcanvas',
+            width: 600,
+            height: 400
+        },
+        title: {
+            text: 'Combination chart'
+        },
+        xAxis: {
+            categories: valor[0]
+        },
+        labels: {
+            items: [{
+                html: 'HighCharts',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                }
+            }]
+        },
+        series: serie
     });
- 
+    $('#hcanvas').remove();
+    $('#highcharts').append('<div id="hcanvas"></div>');
+    var Hchart = new Highcharts.Chart(style);
 }

@@ -61,7 +61,8 @@ body {
 }
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
+.nav-sidebar > .active > a:focus ,
+.dropdown-menu {
   color: #fff;
   background-color: #428bca;
 }
@@ -102,4 +103,7 @@ body {
 .placeholder img {
   display: inline-block;
   border-radius: 50%;
+}
+.menu {
+    float: left;
 }

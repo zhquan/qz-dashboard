@@ -17,6 +17,7 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 	<script src="js/Chart.js"></script>
+    <script src="js/highcharts.js"></script>
     <script src="js/index.js"></script>
   </head>
 
@@ -50,46 +51,47 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li><a href="#overview">Overview</a></li>
-            <li><a href="#pruebas">Pruebas</a></li>
+            <li><a href="#index">Index</a></li>
+            <li><a href="#chartsjs">Charts JS</a></li>
+            <li><a href="#highcharts">Highcharts</a></li>
             <li><a href="#analytics">Analytics</a></li>
-            <li><a href="#">Export</a></li>
+            <li class="dropdown">
+              <a href="#" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">Something else here</a></li>
+              </ul>
+            </li>
           </ul>
           
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">QZ Dashboard</h1>
-
           <div class="row placeholders">
-
         <div class="pestana">
-        <section id="overview">
+    
+        <section id="index">
             
-            <div id="menu" style="float: left">
-                <div id="algo"></div>
-                <button id="example">EXAMPLE</button><br>
-                <button style="display: none" id="bar">BAR</button>
-                <button style="display: none" id="doughnut">DOUGHNUT</button>
-                <button style="display: none" id="line">LINE</button>
-                <button style="display: none" id="pie">PIE</button>
-                <button style="display: none" id="polararea">PolarArea</button>
-                <button style="display: none" id="radar">RADAR</button>
+        </section>
+        <section id="chartsjs">
+            <div class="menu">
+                <div id="algo" class="menu-nav"></div>
             </div>
 		    <div style="width: 50%; float: left" class="canvas">
 			    <canvas id="canvas" height="450" width="600"></canvas>
 		    </div>
             <div id="legend"></div>
-
-
-
         </section>
 
-        <section id="pruebas">
-
-            <div id="prueba">
-                <button onclick="prueba()">prueba</button>
+        <section id="highcharts">
+            <div class="menu">
+                <div class="menu-nav"></div>
             </div>
+            <div id="hcanvas"></div>
         </section>
+
+
         <section id="analytics">
           <h2 class="sub-header">Section title</h2>
           <div class="table-responsive">
