@@ -18,6 +18,7 @@ $(document).ready(function(){
         json(activeTab);
     });
 });
+// pintar el checkbox en la pagina principal
 function json(div){
     var Json = "json/dox-irc-rep-evolutionary.json";
     $(".menu-nav").html('');
@@ -39,6 +40,10 @@ function json(div){
                     $("#desde").append('<option value="'+val[i]+'">'+val[i]+'</option>');
                     $("#hasta").append('<option value="'+val[i]+'">'+val[i]+'</option>');
                 }
+                $(div+" .menu-nav").append('<div id="sdesde"></div>');
+                barra("#desde", "#sdesde", val.length);
+                $(div+" .menu-nav").append('<div id="shasta"></div>');
+                barra("#hasta", "#shasta", val.length);
             }
         });
         if (div == '#chartsjs'){
@@ -47,6 +52,22 @@ function json(div){
         $(div+" .menu-nav").append('<input type="button" onclick="selection(\''+Json+'**'+div+'\')" value="OK">');
     });
 }
+// funcion de slider
+function barra(sli, div, len){
+    var select = $(sli);
+    var slider = $(div).insertAfter( select ).slider({
+        min: 1,
+        max: len,
+        value: select[ 0 ].selectedIndex + 1,
+        slide: function( event, ui ) {
+            select[ 0 ].selectedIndex = ui.value - 1;
+        }
+    });
+    $(div).change(function() {
+        slider.slider( "value", this.selectedIndex + 1 );
+    });
+}
+// onclick del OK
 function selection(request) {
     var json = request.split("**")[0];
     var div = request.split("**")[1];
@@ -63,6 +84,8 @@ function selection(request) {
         highchart(check, color, valor);
     }
 }
+// te devuelve un array con valor[0] el tiempo, valor[1] datos de la grafica
+// check los checked de los keys, Json el json
 function sacar(check, Json) {
     var desde = document.formul.desde.options[document.formul.desde.selectedIndex].value;
     var hasta = document.formul2.hasta.options[document.formul2.hasta.selectedIndex].value;
@@ -166,7 +189,7 @@ function highchart(check, color, valor) {
         },
         labels: {
             items: [{
-                html: 'HighCharts',
+                html: '',
                 style: {
                     left: '50px',
                     top: '18px',

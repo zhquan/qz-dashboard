@@ -107,3 +107,6 @@ body {
 .menu {
     float: left;
 }
+#canvas, #hcanvas{
+    margin-left: 40%;
+} 
