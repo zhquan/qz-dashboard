@@ -109,4 +109,17 @@ body {
 }
 #canvas, #hcanvas{
     margin-left: 40%;
-} 
+}
+.hcanvas{
+    float: left;
+}
+#menu{
+    background-color: #fff;
+    color: #428bca;
+    position: absolute;
+    width: 400px;
+    border: outset #5A5B63;
+    border-radius: 5px;
+    box-shadow: 0px 0px 20px #5A5B63;
+    padding: 10px;
+}

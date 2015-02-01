@@ -1,56 +1,48 @@
 $(document).ready(function(){
-    $('.nav-sidebar li:first').addClass('active');
-    $('.pestana section').hide();
-    $('.pestana section:first').show();    
-    $('.nav-sidebar li').click(function(){
-        $('.nav-sidebar li').removeClass('active');
-        $(this).addClass('active')
-        $('.pestana section').hide();
-        var activeTab = $(this).find('a').attr('href');
-        $(activeTab).show();
-        if (activeTab == '#chartsjs'){
-            $('.page-header').html('Charts JS');
-        }else if(activeTab == '#highcharts'){
-            $('.page-header').html('HighCharts');
-        }else if (activeTab == '#analytics'){
-            $('.page-header').html('Analytics');
-        }
-        json(activeTab);
+    $("#chardiv").click(function(){
+        json('chartsjs');
+    });
+    $("#highdiv").click(function(){
+        json('highcharts');
     });
 });
-// pintar el checkbox en la pagina principal
+// Formulario de menu
 function json(div){
+    cancelar();
+    $("#index").append('<div id="menu"></div>');
     var Json = "json/dox-irc-rep-evolutionary.json";
-    $(".menu-nav").html('');
     $.getJSON(Json).success(function(data){
         $.each( data, function( key, val ) {
             if (key != 'date'){
-                if(div == '#chartsjs'){
-                    $(div+" .menu-nav").append('<input type="checkbox" name="'+key+'" value="'+key+'"> <label> '+key+' -> Color: </label><input type="text" value="rgba(151,187,205,0.3)" id="color'+key+'"><br>');
-                }else if (div == '#highcharts'){
-                    $(div+" .menu-nav").append('<input type="checkbox" name="'+key+'" value="'+key+'"> <label> '+key+' -> Color: </label><input type="text" value="silver" id="color'+key+'" size="7"><input type="radio" name="'+key+'" value="line">Line <input type="radio" name="'+key+'" value="bar">Bar <input type="radio" name="'+key+'" value="pie">Pie<br>');
+                if(div == 'chartsjs'){
+                    $('#menu').append('<input type="checkbox" name="'+key+'" value="'+key+'"> <label> '+key+' -> Color: </label><input type="text" value="rgba(151,187,205,0.3)" id="color'+key+'"><br>');
+                }else if (div == 'highcharts'){
+                    $("#menu").append('<input type="checkbox" name="'+key+'" value="'+key+'"> <label> '+key+' -> Color: </label><input type="text" value="silver" id="color'+key+'" size="7"><input type="radio" name="'+key+'" value="line">Line <input type="radio" name="'+key+'" value="bar">Bar <input type="radio" name="'+key+'" value="pie">Pie<br>');
                 }
             }
         });
-        $(div+" .menu-nav").append('<form name="formul"><label>Desde: </label><select id="desde" name="desde"></select></form>');
-        $(div+" .menu-nav").append('<form name="formul2"><label>Hasta: </label><select id="hasta" name="hasta"></select></form>');
+        $("#menu").append('<form name="formul"><label>Desde: </label><select id="desde" name="desde"></select></form>');
+        $("#menu").append('<form name="formul2"><label>Hasta: </label><select id="hasta" name="hasta"></select></form>');
         $.each( data, function( key, val ) {
             if (key == 'date'){
                 for (var i = 0; i<val.length; i++){
                     $("#desde").append('<option value="'+val[i]+'">'+val[i]+'</option>');
                     $("#hasta").append('<option value="'+val[i]+'">'+val[i]+'</option>');
                 }
-                $(div+" .menu-nav").append('<div id="sdesde"></div>');
+                $("#menu").append('<div id="sdesde"></div>');
                 barra("#desde", "#sdesde", val.length);
-                $(div+" .menu-nav").append('<div id="shasta"></div>');
+                $("#menu").append('<div id="shasta"></div>');
                 barra("#hasta", "#shasta", val.length);
             }
         });
-        if (div == '#chartsjs'){
-            $(div+" .menu-nav").append('<form name="formul3"><label>Tipo: </label><select name="tipo"><option value="Line">Line</option><option value="Bar">Bar</option><option value="Radar">Radar</option></select></form>');
+        if (div == 'chartsjs'){
+            $("#menu").append('<form name="formul3"><label>Tipo: </label><select name="tipo"><option value="Line">Line</option><option value="Bar">Bar</option><option value="Radar">Radar</option></select></form>');
         }
-        $(div+" .menu-nav").append('<input type="button" onclick="selection(\''+Json+'**'+div+'\')" value="OK">');
+        $("#menu").append('<br><input type="button" onclick="selection(\''+Json+'**'+div+'\')" value="OK"> <input type="button" onclick="cancelar()" value="cancelar">');
     });
+}
+function cancelar(){
+    $("#menu").remove();
 }
 var id = 0;
 // funcion de slider
@@ -74,16 +66,17 @@ function selection(request) {
     var div = request.split("**")[1];
     var check = [];
     var color = [];
-    $(div+" .menu-nav input[type='checkbox']:checked").each(function(){
+    $("#menu input[type='checkbox']:checked").each(function(){
         check.push($(this).attr('value'));
         color.push(document.getElementById('color'+$(this).attr('value')).value);
     })
     var valor = sacar(check, json);
-    if (div == '#chartsjs'){
+    if (div == 'chartsjs'){
         chartsjs(check, color, valor);
-    }else if (div == '#highcharts'){
+    }else if (div == 'highcharts'){
         highchart(check, color, valor);
     }
+    cancelar();
 }
 // te devuelve un array con valor[0] el tiempo, valor[1] datos de la grafica
 // check los checked de los keys, Json el json
@@ -145,36 +138,39 @@ function chartsjs(check, color, valor){
     var options = {
         legendTemplate : '<ul>'
                         +'<% for (var i=0; i<datasets.length; i++) { %>'
-                        +'<li>'
                         +'<span style=\"background-color:<%=datasets[i].fillColor%>\">'
                         +'<% if (datasets[i].label) { %><%= datasets[i].label %><% } %></span>'
-                        +'</li>'
                         +'<% } %>'
                         +'</ul>'
     }
     var tipo = document.formul3.tipo.options[document.formul3.tipo.selectedIndex].value;
-    $("#canvas").remove();
-    $("#legend").html('');
-    $(".canvas").html('<canvas id="canvas" height="450" width="600"></canvas>');
+    var div = 'div'+id;
+    $("#index").append('<div id="exterior'+div+'" class="canvas" style="width: 606px; height: 406px; border-width: 0px; border: solid; margin: 1px; float:left"><canvas id="canvas'+div+'" width="590" height="350"></canvas></div>');
     if (tipo == 'Line'){
-        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Line(Datas, options);
+        var myChart = new Chart(document.getElementById("canvas"+div).getContext("2d")).Line(Datas, options);
     }else if (tipo == 'Bar'){
-        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Bar(Datas, options);
+        var myChart = new Chart(document.getElementById("canvas"+div).getContext("2d")).Bar(Datas, options);
     }else if (tipo == 'Radar'){
-        var myChart = new Chart(document.getElementById("canvas").getContext("2d")).Radar(Datas, options);
+        var myChart = new Chart(document.getElementById("canvas"+div).getContext("2d")).Radar(Datas, options);
     }
     var legend = myChart.generateLegend();
-    $("#legend").html(legend);
+    $('#exterior'+div).append('<div id="legend'+div+'"></div>');
+    $("#legend"+div).html(legend+'<input type="button" onclick="borrarChart(\'exterior'+div+'\')" value="destroy">');
+}
+function borrarChart(div){
+    $('#'+div).remove();
 }
 function highchart(check, color, valor) {
     var tipo = [];
-    $(".menu-nav input[type='radio']:checked").each(function(){
+    $("#menu input[type='radio']:checked").each(function(){
         tipo.push($(this).attr('value'));
     })
     var serie = [];
+    var titulo = '';
     for (var i= 0; i<check.length; i++){
         var obj = {type: tipo[i], name: check[i], data: valor[1][i], color: color[i]};
         serie.push(obj);
+        titulo = titulo+' '+check[i];
     }
     id = id+1;
     var div = 'div'+id;
@@ -185,7 +181,7 @@ function highchart(check, color, valor) {
             height: 400
         },
         title: {
-            text: 'Combination chart'
+            text: titulo
         },
         xAxis: {
             categories: valor[0]
@@ -214,8 +210,7 @@ function highchart(check, color, valor) {
             }
         }
     });
-    
-    $('#hcanvas').append('<div id="'+div+'" class="hcanvas"></div>');
+    $('#index').append('<div id="'+div+'" class="hcanvas" style="border: solid; margin: 1px;"></div>');
     var Hchart = new Highcharts.Chart(style);
 }
 // Borrar la grafica del div

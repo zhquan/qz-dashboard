@@ -209,6 +209,7 @@ function highchart(check, color, valor) {
                         onclick: function () {
                             $("#"+div).remove();
                         }
+                    
                     }]
                 }
             }
